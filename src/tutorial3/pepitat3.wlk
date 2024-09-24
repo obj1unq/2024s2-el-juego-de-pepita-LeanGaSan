@@ -1,4 +1,3 @@
-
 import wollok.game.*
 import posiciones.*
 import extras.*
@@ -7,24 +6,24 @@ import comidas.*
 object pepita {
 	var energia = 100
 	var property position = game.at(3,5)
-	const destino = nido
-	const cazador = silvestre
+	var property estado = viva
 
 	method comer(comida) {
 		energia = energia + comida.energiaQueOtorga()
 	}
 
-	// Etsa es la versión para trabajar apretando la tecla
-	method comerAhi() {
-		const comida = game.uniqueCollider(self)
-		self.comer(comida)
-		game.removeVisual(comida)
-	}
+	method ganar() {
+        game.say(self, "Gané :)")
+    }
+    
+    method perder() {
+        game.say(self, "Perdí :(")
+    }
 
 	// Tutorial 3, colisiones
 	method comerVisual(comida) {
-		self.comer(comida)
 		game.removeVisual(comida)
+		self.comer(comida)
 	}
  
 	method energiaParaVolar(kms) {
@@ -37,7 +36,10 @@ object pepita {
 
 	method volar(kms) {
 		self.validarVolar(kms)
-		energia = energia - 10 - kms 
+		energia = energia - self.energiaParaVolar(kms)
+        if (not self.puedeVolar(1)) {
+            self.perder()
+        }
 	}
 
 	method validarVolar(kms) {
@@ -56,22 +58,7 @@ object pepita {
 		return "pepita-" + self.estado() + ".png"
 	}
 
-	/* Este es el método sin colisiones
-	method estado() {
-		return if (self.estaEnDestino()) {
-			victoriosa
-		} else if (self.muerta()) {
-			muerta
-		} else {
-			viva
-		}
-	} */
 
-	method 
-
-	method muerta() {
-		return self.estaAtrapada() or not self.puedeMover()
-	}
 
 	method text() {
 		return self.energia().toString()
@@ -91,7 +78,6 @@ object pepita {
 	method desplazar(direccion) {
 		self.validarMover(direccion)
 		position = direccion.siguiente(self.position())
-		self.estado().comprobarFinDeJuego()
 	}
 
 	method validarMover(direccion) {
@@ -135,6 +121,7 @@ object pepita {
 		self.desplazar(abajo)
 	}
 
+
 	// IDEA DE QUE PEPITA NO PUEDA ATRAVEZAR UN OBJETO
 	method solida() {
 		return false
@@ -144,10 +131,6 @@ object pepita {
 object viva {
 	method puedeMover() {
 		return 	true
-	}
-
-	method comprobarFinDeJuego(personaje) {
-		
 	}
 
 	method fondo() {
@@ -160,11 +143,6 @@ object muerta {
 		return false
 	}
 
-	method comprobarFinDeJuego(personaje) {
-		game.say(personaje, "Perdí! :(") 
-		game.schedule(500, { game.stop() })
-	}
-
 	method fondo() {
 		0
 	}
@@ -173,11 +151,6 @@ object muerta {
 object victoriosa {
 	method puedeMover() {
 		return false
-	}
-
-	method comprobarFinDeJuego(personaje) {
-		game.say(personaje, "Gané! :D") 
-		game.schedule(500, { game.stop() })
 	}
 
 	method fondo() {

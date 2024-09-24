@@ -1,0 +1,46 @@
+import wollok.game.*
+import pepita.*
+import posiciones.*
+import extras.*
+import comidas.*
+
+program pepitaGame {
+	game.title("Pepita") 	//Valor por defecto "Wollok Game"
+	game.height(10) 		//valor por defecto 5
+	game.width(10) 			//valor por defecto 5
+	game.cellSize(50) 		//valor por defecto 50
+	//search assets in assets folder, for example, for the background
+	//Valor por defecto game.ground("ground.png")
+	//game.ground("fondo2.jpg")
+	game.addVisual(fondo)
+	game.addVisual(reloj)
+	game.addVisual(muro)
+	game.addVisual(nido)
+	game.addVisual(silvestre)
+	game.addVisual(manzana)
+	game.addVisual(alpiste)
+	game.addVisual(pepita)
+
+	//game.addVisualCharacter(pepita)
+	keyboard.up().onPressDo({pepita.mover(arriba)})
+	keyboard.left().onPressDo({pepita.mover(izquierda)})
+	keyboard.down().onPressDo({pepita.mover(abajo)})
+	keyboard.right().onPressDo({pepita.mover(derecha)})
+	keyboard.c().onPressDo({pepita.comerAhi()})
+
+
+	///COLISIONES: línea importante
+	game.onCollideDo(pepita, {cosa => cosa.colisiono(pepita)})
+	
+	// Pruebas sin mas
+	// game.onTick(5000, "cambiarFondo", { fondo.cambiar() })
+	game.onTick(1000, "reloj", { reloj.tick() })
+	game.onTick(800, "gravedad", { pepita.caer() })
+
+
+	//esto es de la versión de eventos
+	//keyboard.f().onPressDo({fondo.cambiar()})
+	game.start()	
+}
+
+// No hay problema con usar las dos formas, calcular o recordar. Pero no hacerlo en el mismo objeto
